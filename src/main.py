@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import pandas as pd
+import sys
 from data_process import process_excel
 
 def main() -> int:
@@ -25,18 +26,18 @@ def main() -> int:
         print(f"DataFrame has been written to {output_file}")
         return 0
     except ValueError as e:
-        print(f"Value error: {e}")
+        print(f"Value error: {e}", file = sys.stderr)
         return 1
     except FileNotFoundError as e:
-        print(f"File not found: {e}")
+        print(f"File not found: {e}", file = sys.stderr)
         return 2
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An error occurred: {e}", file = sys.stderr)
         return 3
     except:
-        print("An unknown error occurred")
+        print("An unknown error occurred", file = sys.stderr)
         return -1
 
 if __name__ == '__main__':
     exit_code = main()
-    exit(exit_code)
+    sys.exit(exit_code)
