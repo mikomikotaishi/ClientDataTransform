@@ -1,19 +1,19 @@
 import pandas as pd
-from typing import Any, Dict, Union
+from typing import Any, Dict, List, Union
 
-COLUMN_NAMES_A = [ "Status", "Payee Date of Birth", "Spouse Date of Birth", "Payee Gender", "Spouse Gender", "Province of Residence", # Columns A through F
-                "Postal Code", "Original Member's Date of Retirement", "Original Member's Date of Death", "Lifetime Monthly Pension", # Columns G through J
-                "Original Guarantee (years)", "Date Guarantee End", "Unlocated Member (Y/N)", "Surname", "Given Name", "Spouse Surname", # Columns K through P
-                "Spouse Given Name", "Marital Status", "Beneficiary Surname", "Beneficiary Given Name" ] # Columns Q through T
-COLUMN_NAMES_B = [ "Status", "Member DOB", "Spouse DOB", "Gender (M=1, F=2)", "Spouse Sex", "Postal Code", # Columns A through F
-                "DOR", "Date of Death", "Pension", "Member Name", "Spouse Name", "Beneficiary Name", # Columns G through L
-                "Marital Status", "Original Guarantee (years)", "Date Guarantee End", "Unlocated Member (Y/N)" ] # Columns M through P
-RESULT_COLUMNS = [ "ID", "Status", "Member DOB", "Missing DOB?", "Spouse Date of Birth", "Missing Spouse DOB?", # Columns A through F
-                "Payee Gender", "Member Gender Anomaly", "Spouse Gender", "Spouse Gender Anomaly", "Gender Mismatch", # Columns G through K
-                "Province of Residence", "Postal Code", "Postal Code Check", "Original Member's Date of Retirement", # Columns L through O
-                "Original Member's Date of Death", "Lifetime Monthly Pension", "Pension Amount Check", "Original Guarantee (years)", # Columns P through S
-                "Date Guarantee End", "Guarantee Check", "Unlocated Member (Y/N)", "Unlocated Check", "Member Name", "Member Name Check", # Columns T through Y
-                "Spouse Name", "Spouse Name Check", "Marital Status", "Beneficiary Name", "Beneficiary Name Check" ] # Columns Z through AD
+COLUMN_NAMES_A: List[str] = [ "Status", "Payee Date of Birth", "Spouse Date of Birth", "Payee Gender", "Spouse Gender", "Province of Residence", # Columns A through F
+                              "Postal Code", "Original Member's Date of Retirement", "Original Member's Date of Death", "Lifetime Monthly Pension", # Columns G through J
+                              "Original Guarantee (years)", "Date Guarantee End", "Unlocated Member (Y/N)", "Surname", "Given Name", "Spouse Surname", # Columns K through P
+                              "Spouse Given Name", "Marital Status", "Beneficiary Surname", "Beneficiary Given Name" ] # Columns Q through T
+COLUMN_NAMES_B: List[str] = [ "Status", "Member DOB", "Spouse DOB", "Gender (M=1, F=2)", "Spouse Sex", "Postal Code", # Columns A through F
+                              "DOR", "Date of Death", "Pension", "Member Name", "Spouse Name", "Beneficiary Name", # Columns G through L
+                              "Marital Status", "Original Guarantee (years)", "Date Guarantee End", "Unlocated Member (Y/N)" ] # Columns M through P
+RESULT_COLUMNS: List[str] = [ "ID", "Status", "Member DOB", "Missing DOB?", "Spouse Date of Birth", "Missing Spouse DOB?", # Columns A through F
+                              "Payee Gender", "Member Gender Anomaly", "Spouse Gender", "Spouse Gender Anomaly", "Gender Mismatch", # Columns G through K
+                              "Province of Residence", "Postal Code", "Postal Code Check", "Original Member's Date of Retirement", # Columns L through O
+                              "Original Member's Date of Death", "Lifetime Monthly Pension", "Pension Amount Check", "Original Guarantee (years)", # Columns P through S
+                              "Date Guarantee End", "Guarantee Check", "Unlocated Member (Y/N)", "Unlocated Check", "Member Name", "Member Name Check", # Columns T through Y
+                              "Spouse Name", "Spouse Name Check", "Marital Status", "Beneficiary Name", "Beneficiary Name Check" ] # Columns Z through AD
 
 def process_excel(input_file: str, file_type: str) -> pd.DataFrame:
     """
@@ -75,7 +75,6 @@ def process_data(row: pd.Series, file_type: str, identifier_counter: int) -> Dic
     Returns:
         Dict[str, Any]: Processed data as a dictionary
     """
-
     processed_row: Dict[str, Any] = {}
     column_names = COLUMN_NAMES_A if file_type == 'A' else COLUMN_NAMES_B
     
