@@ -8,6 +8,9 @@ def main() -> int:
     """
     Main function for the script.
     Processes an Excel file and writes the processed data to an output file.
+    
+    Returns:
+        int: 0 if the script runs successfully, 1 if a ValueError is raised, 2 if a FileNotFoundError is raised, 3 if an Exception is raised, -1 if an unknown error is raised
     """
     try:
         manual_input: bool = False

@@ -17,7 +17,7 @@ RESULT_COLUMNS: List[str] = [ "ID", "Status", "Member DOB", "Missing DOB?", "Spo
 
 def process_excel(input_file: str, file_type: str) -> pd.DataFrame:
     """
-    Process thte data from an Excel file based on the specified file type.
+    Process the data from an Excel file based on the specified file type.
 
     Args:
         input_file (str): Name of the input Excel file
