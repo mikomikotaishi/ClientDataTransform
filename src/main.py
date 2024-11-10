@@ -30,17 +30,14 @@ def main() -> int:
             elif (len(sys.argv) > 5):
                 raise ValueError("Too many arguments")
             else:
-                # Define the command line arguments
                 parser: argparse.ArgumentParser  = argparse.ArgumentParser(description = "Read an Excel file")
                 parser.add_argument("file_name", type = str, help = "Name of the Excel file")
                 parser.add_argument("file_format", choices = ['A', 'B'], help = "Format of Excel file (A or B)")
                 parser.add_argument("-o", "--output", type = str, help = "Name of the output file (optional)")
                 args: argparse.Namespace = parser.parse_args()
 
-        # Process the Excel spreadsheet
         processed_data: pd.DataFrame = process_excel((input_file if manual_input else args.file_name), (file_format if manual_input else args.file_format))
 
-        # Write the processed data to an output file
         if manual_input:
             output_file: str = output_file if output else "output.xlsx"
         else:
