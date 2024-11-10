@@ -26,23 +26,16 @@ def process_excel(input_file: str, file_type: str) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Processed data as a DataFrame
     """
-    # Validate the file type
     if file_type not in ['A', 'B']:
         raise ValueError("Invalid file type specified")
 
     identifier_counter: int = 1
-
-    # Load the Excel file as a DataFrame
     df: pd.DataFrame = pd.read_excel(input_file, header = 0)
-
-    # Create an empty DataFrame to store the processed data
     processed_data: pd.DataFrame = pd.DataFrame(columns = RESULT_COLUMNS)
 
-    # Iterate through rows in the input DataFrame
     for _, row in df.iterrows():
         if identifier_counter > 9999999999:
             raise ValueError("Too many rows in the input file")
-        # Process the row
         processed_row: Dict[str, Any] = process_data(row, file_type, identifier_counter)
         processed_data = pd.concat([processed_data, pd.DataFrame([processed_row])], ignore_index = True)
         identifier_counter += 1
@@ -77,15 +70,13 @@ def process_data(row: pd.Series, file_type: str, identifier_counter: int) -> Dic
     """
     processed_row: Dict[str, Any] = {}
     column_names = COLUMN_NAMES_A if file_type == 'A' else COLUMN_NAMES_B
-    
-    # Process the row based on the file type   
+       
     processed_row["ID"] = str(identifier_counter).zfill(10)
     processed_row["Status"] = "Unspecified" if pd.isnull(row[column_names.index("Status")]) else row[column_names.index("Status")]
     processed_row["Member DOB"] = row[column_names.index("Payee Date of Birth")] if file_type == 'A' else row[column_names.index("Member DOB")]
     processed_row["Missing DOB?"] = "Yes" if pd.isnull(processed_row["Member DOB"]) else "No"
     processed_row["Spouse Date of Birth"] = row[column_names.index("Spouse Date of Birth")] if file_type == 'A' else row[column_names.index("Spouse DOB")]
     processed_row["Missing Spouse DOB?"] = "Yes" if pd.isnull(processed_row["Spouse Date of Birth"]) else "No"
-    # Process Payee Gender column
     if file_type == 'A':
         processed_row["Payee Gender"] = row[column_names.index("Payee Gender")]
     else:
@@ -95,9 +86,7 @@ def process_data(row: pd.Series, file_type: str, identifier_counter: int) -> Dic
             case 2:
                 processed_row["Payee Gender"] = "F"
             case _:
-                # Error-checking case
                 processed_row["Payee Gender"] = "X"
-    # Process Member Gender Anomaly column
     if (pd.isnull(processed_row["Payee Gender"]) or len(processed_row["Payee Gender"]) == 0):
         processed_row["Member Gender Anomaly"] = "Missing gender"
     elif processed_row["Payee Gender"] not in ["M", "F"]:
@@ -105,7 +94,6 @@ def process_data(row: pd.Series, file_type: str, identifier_counter: int) -> Dic
     else:
         processed_row["Member Gender Anomaly"] = "Good"
     processed_row["Spouse Gender"] = row[column_names.index("Spouse Sex")] if file_type == 'B' else row[column_names.index("Spouse Gender")]
-    # Process Spouse Gender Anomaly column
     if pd.isnull(processed_row["Spouse Gender"]) and row[column_names.index("Marital Status")] == "Yes":
         processed_row["Spouse Gender Anomaly"] = "Missing gender"
     elif processed_row["Spouse Gender"] not in ["M", "F"] and row[column_names.index("Marital Status")] == "Yes":
@@ -122,14 +110,12 @@ def process_data(row: pd.Series, file_type: str, identifier_counter: int) -> Dic
     processed_row["Pension Amount Check"] = "Correct" if processed_row["Lifetime Monthly Pension"] > 0 else "Incorrect amount"
     processed_row["Original Guarantee (years)"] = row[column_names.index("Original Guarantee (years)")]
     processed_row["Date Guarantee End"] = row[column_names.index("Date Guarantee End")]
-    # Process Guarantee Check column
     if pd.isnull(processed_row["Date Guarantee End"]) and processed_row["Original Guarantee (years)"] != "":
         processed_row["Guarantee Check"] = "No"
     else:
         processed_row["Guarantee Check"] = "Yes"
     processed_row["Unlocated Member (Y/N)"] = row[column_names.index("Unlocated Member (Y/N)")]
     processed_row["Unlocated Check"] = "Correct" if pd.isnull(processed_row["Unlocated Member (Y/N)"]) else "Investigate" if processed_row["Unlocated Member (Y/N)"] == "Y" else "Correct"
-    # Process Member Name column
     if file_type == 'A':
         if pd.isnull(row[column_names.index("Given Name")]) and pd.isnull(row[column_names.index("Surname")]):
             processed_row["Member Name"] = ""
@@ -142,7 +128,6 @@ def process_data(row: pd.Series, file_type: str, identifier_counter: int) -> Dic
     else:
         processed_row["Member Name"] = row[column_names.index("Member Name")]
     processed_row["Member Name Check"] = "Yes" if len(processed_row["Member Name"]) > 0 else "No"
-    # Process Spouse Name column
     if file_type == 'A':
         if pd.isnull(row[column_names.index("Spouse Given Name")]) and pd.isnull(row[column_names.index("Spouse Surname")]):
             processed_row["Spouse Name"] = ""
@@ -156,7 +141,6 @@ def process_data(row: pd.Series, file_type: str, identifier_counter: int) -> Dic
         processed_row["Spouse Name"] = row[column_names.index("Spouse Name")]
     processed_row["Spouse Name Check"] = "No" if (pd.isnull(processed_row["Spouse Name"]) and row[column_names.index("Marital Status")] == "Yes") else "Yes"
     processed_row["Marital Status"] = row[column_names.index("Marital Status")]
-    # Process Beneficiary Name column
     if file_type == 'A':
         if pd.isnull(row[column_names.index("Beneficiary Given Name")]) and pd.isnull(row[column_names.index("Beneficiary Surname")]):
             processed_row["Beneficiary Name"] = ""
@@ -170,5 +154,4 @@ def process_data(row: pd.Series, file_type: str, identifier_counter: int) -> Dic
         processed_row["Beneficiary Name"] = row[column_names.index("Beneficiary Name")]
     processed_row["Beneficiary Name Check"] = "No" if ((pd.isnull(processed_row["Beneficiary Name"]) or len(processed_row["Beneficiary Name"]) == 0) and processed_row["Status"] == "Beneficiary") else "Yes"
 
-    # Return the processed row
     return processed_row
